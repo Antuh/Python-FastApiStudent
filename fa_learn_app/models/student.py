@@ -14,6 +14,7 @@ class BaseStudent(BaseModel):
     birthday: str
     login: str
     password: str
+    id_group: str
     description :Optional[str] = None
 
 class StudentIn(BaseStudent):
@@ -31,6 +32,7 @@ class StudentOut(BaseStudent):
     age :int
     birthday: str
     login: str
+    id_group: str
 
 
 
