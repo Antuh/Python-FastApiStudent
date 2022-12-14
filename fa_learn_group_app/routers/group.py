@@ -1,7 +1,7 @@
 from typing import List
 import uuid
 from fastapi import APIRouter, Depends
-from fa_learn_app.dependencies import get_product_repo
+from fa_learn_group_app.dependencies import get_product_repo
 from fa_learn_group_app.models.group import GroupIn, GroupOut
 from fa_learn_group_app.repositories.group import BaseProductRepository
 
@@ -15,7 +15,7 @@ async def get_products(
         limit :int = 100,
         skip :int = 0
     ):
-    return product_repo.get_by_id(id)
+    return product_repo.get_all(limit=limit,skip = skip)
 
 @router.get("/Group", response_model = GroupOut)
 async def get_product(

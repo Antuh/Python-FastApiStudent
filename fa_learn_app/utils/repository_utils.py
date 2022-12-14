@@ -29,4 +29,4 @@ def update_product_in_to_storage(id_old :uuid.UUID, product_new: StudentIn) -> S
                                      created_at=datetime.datetime.now(),
                                      **tmp_dict)
 
-    return 
+    return product_storage

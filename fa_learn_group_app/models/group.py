@@ -9,7 +9,7 @@ class BaseGroup(BaseModel):
     # Базовый класс для описания студента
 
     name :str
-
+    
 
 class GroupIn(BaseGroup):
     # Класс описывает студента, отправленный от пользователя
@@ -20,6 +20,8 @@ class GroupOut(BaseGroup):
     # Класс описывает студента, который отправляется пользователю (без секретной информации)
 
     name :str
+    id :uuid.UUID
+
 
 
 class GroupStorage(BaseGroup):

@@ -15,7 +15,7 @@ async def get_products(
         limit :int = 100,
         skip :int = 0
     ):
-    return product_repo.get_by_id(id)
+    return product_repo.get_all(limit=limit, skip=skip)
 
 @router.get("/student", response_model = StudentOut)
 async def get_product(

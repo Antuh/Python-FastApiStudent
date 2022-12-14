@@ -44,7 +44,7 @@ class ProductTmpRepository(BaseProductRepository):
         product_out_list :List[GroupOut] = []
         for _, product in self._dict_products.items():
             product_out_list.append(convert_product_storage_to_out(product))
-            return  product_out_list[skip:skip+limit]
+        return  product_out_list[skip:skip+limit]
 
     def create(self, product: GroupIn) -> GroupOut:
         # Создание студента
