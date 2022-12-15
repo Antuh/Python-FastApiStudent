@@ -1,52 +1,55 @@
 from typing import List
 import uuid
 from fastapi import APIRouter, Depends
-from fa_learn_group_app.dependencies import get_product_repo
-from fa_learn_group_app.models.group import GroupIn, GroupOut
-from fa_learn_group_app.repositories.group import BaseProductRepository
-
-
+from fa_learn_group_app.dependencies import get_group_repo
+from fa_learn_group_app.models.group import GroupIn, GroupStorage
+from fa_learn_group_app.repositories.group import BaseGroupRepository
 
 router = APIRouter()
 
-@router.get("/Groups", response_model = List[GroupOut])
-async def get_products(
-        product_repo :BaseProductRepository = Depends(get_product_repo),
-        limit :int = 100,
-        skip :int = 0
-    ):
-    return product_repo.get_all(limit=limit,skip = skip)
 
-@router.get("/Group", response_model = GroupOut)
-async def get_product(
-        id :uuid.UUID,
-        product_repo :BaseProductRepository = Depends(get_product_repo),
-    ):
-    return product_repo.get_by_id((id))
-
-@router.post("/Group", response_model = GroupOut)
-async def create_product(
-        product_in :GroupIn,
-        product_repo :BaseProductRepository = Depends(get_product_repo),
-    ):
-    return product_repo.create(product_in)
-
-@router.put("/Group", response_model=GroupOut | str)
-async def update_product(
-        id: uuid.UUID,
-        product_in: GroupIn,
-        product_repo: BaseProductRepository = Depends(get_product_repo),
+@router.get("/groups",  response_model=List[GroupStorage])
+async def get_groups(
+        group_repo: BaseGroupRepository = Depends(get_group_repo),
+        limit: int = 100,
+        skip: int = 0
         ):
 
-    return product_repo.updateproduct(id, product_in)
+    return group_repo.get_all(limit=limit, skip=skip)
 
-@router.delete("/Group", response_model=str)
-async def delete_product(
+
+@router.get("/group", response_model=GroupStorage | str)
+async def get_group(
         id: uuid.UUID,
-        product_repo: BaseProductRepository = Depends(get_product_repo),
+        group_repo: BaseGroupRepository = Depends(get_group_repo),
         ):
 
-    return product_repo.delete(id)
+    return group_repo.get_by_id(id)
 
 
+@router.post("/group", response_model=GroupStorage)
+async def create_group(
+        group_in: GroupIn,
+        group_repo: BaseGroupRepository = Depends(get_group_repo),
+        ):
 
+    return group_repo.create(group_in)
+
+
+@router.put("/group", response_model=GroupStorage | str)
+async def put_group(
+        id: uuid.UUID,
+        group_in: GroupIn,
+        group_repo: BaseGroupRepository = Depends(get_group_repo),
+        ):
+
+    return group_repo.update_by_id(id, group_in)
+
+
+@router.delete("/group", response_model=str)
+async def delete_group(
+        id: uuid.UUID,
+        group_repo: BaseGroupRepository = Depends(get_group_repo),
+        ):
+
+    return group_repo.delete_by_id(id)

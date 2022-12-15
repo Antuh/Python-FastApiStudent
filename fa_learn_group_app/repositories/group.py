@@ -1,79 +1,78 @@
 from typing import List, Dict, Optional
 import uuid
-from fa_learn_group_app.models.group import GroupIn, GroupOut, GroupStorage
-from fa_learn_group_app.utils.repository_utils import convert_product_storage_to_out, convert_product_in_to_storage, update_product_in_to_storage
+from fa_learn_group_app.models.group import GroupIn, GroupStorage
+from fa_learn_group_app.utils.json_repository import data_groups, save_dict_to_json
+from fa_learn_group_app.utils.repository_utils import convert_group_in_to_storage, update_group_in_storage, convert_group_dict_to_storage
 
-class BaseProductRepository:
-    # Базовый класс для реализации функционала работы со студентами
 
-    def get_by_id(self, id :uuid.UUID | int) -> GroupOut:
+class BaseGroupRepository:
+    # Базовый класс для реализации функционала работы с группами
+
+    def get_by_id(self, id: uuid.UUID) -> GroupStorage:
         raise NotImplementedError
 
-    def get_all(self, limit :int, skip :int) -> List[GroupOut]:
+    def get_all(self, limit: int, skip: int) -> List[GroupStorage]:
         raise NotImplementedError
 
-    def create(self, product :GroupIn) ->GroupOut:
+    def create(self, group: GroupIn) -> GroupStorage:
         raise NotImplementedError
 
-    def updateproduct(self, id : uuid.UUID, product :GroupIn) -> GroupOut:
+    def update_by_id(self, id: uuid.UUID, group: GroupIn) -> GroupStorage:
         raise NotImplementedError
 
-    def delete(self, id :uuid.UUID) -> GroupOut:
+    def delete_by_id(self, id: uuid.UUID) -> GroupStorage:
         raise NotImplementedError
 
-class ProductTmpRepository(BaseProductRepository):
-    # Реализация студента с временным хранилищем в объекте Dict
 
-    def __init__(self):
+class GroupJsonRepository(BaseGroupRepository):
+    # Реализация группы с хранилищем json
 
-        # Временное хранилище
-        self._dict_products :Dict[uuid.UUID, GroupStorage] = {}
+    def get_by_id(self, id: uuid.UUID) -> Optional[GroupStorage]:
+        # Получение группы по id
 
-    def get_by_id(self, id :uuid.UUID) -> Optional[GroupOut]:
-        # Получение студента по id
+        group: GroupStorage = data_groups.get(str(id))
+        if group is None:
+            return "Группа не найдена"
+        group_out = convert_group_dict_to_storage(group)
+        return group_out
 
-        product :GroupStorage = self._dict_products.get(id)
-        if product is None:
-            return None
-        product_out :GroupOut = convert_product_storage_to_out(product)
-        return product_out
+    def get_all(self, limit: int, skip: int) -> List[GroupStorage]:
+        # Получение всех групп
 
-    def get_all(self, limit :int, skip :int) -> List[GroupOut]:
-        # Получение всех студентов
+        group_out_list: List[GroupStorage] = []
+        for _, group in data_groups.items():
+            if group == "":
+                group_out_list.append(convert_group_dict_to_storage(group))
+            elif group.get("group") == group:
+                group_out_list.append(convert_group_dict_to_storage(group))
+        return group_out_list[skip:skip + limit]
 
-        product_out_list :List[GroupOut] = []
-        for _, product in self._dict_products.items():
-            product_out_list.append(convert_product_storage_to_out(product))
-        return  product_out_list[skip:skip+limit]
+    def create(self, group: GroupIn) -> GroupStorage:
+        # Создание группы
 
-    def create(self, product: GroupIn) -> GroupOut:
-        # Создание студента
+        group_storage: GroupStorage = convert_group_in_to_storage(group)
+        data_groups.update({str(group_storage.id): group_storage.dict()})
+        save_dict_to_json()
+        return group_storage
 
-        product_storage: GroupStorage = convert_product_in_to_storage(product)
-        self._dict_products.update({product_storage.id: product_storage})
-        product_out: GroupOut = convert_product_storage_to_out(product_storage)
-        return product_out
+    def update_by_id(self, id: uuid.UUID, group_new: GroupIn) -> Optional[GroupStorage]:
+        # Получение группы по id для обновления данных
 
-    def updateproduct(self, id: uuid.UUID, product_new: GroupIn) -> Optional[GroupOut]:
-        # Получение студента по идентификатору для обновления/изменения данных
+        group_old: GroupStorage = data_groups.get(str(id))
+        if group_old is None:
+            return "Группа не найдена"
 
-        product_old: GroupStorage = self._dict_products.get(id)
-        if product_old is None:
-            return "Данный студент не найден"
+        group_update: GroupStorage = update_group_in_storage(id, group_new)
+        data_groups.update({str(group_update.id): group_update.dict()})
+        save_dict_to_json()
+        return group_update
 
-        product_update: GroupOut = update_product_in_to_storage(id, product_new)
-        self._dict_products.update({product_update.id: product_update})
-        product_out: GroupOut = convert_product_storage_to_out(product_update)
-        return product_out
+    def delete_by_id(self, id: uuid.UUID) -> str:
+        # Удаление группы по id
 
-    def delete(self, id: uuid.UUID) -> str:
-        # Удаление студента по идентификатору
-
-        product: GroupStorage = self._dict_products.get(id)
-        if product is None:
-            return "Данный студент не найден"
-        self._dict_products.pop(id, None)
-        return "Студента успешно удален"
-
-
-
+        group: GroupStorage = data_groups.get(str(id))
+        if group is None:
+            return "Группа не найдена"
+        data_groups.pop(str(id), None)
+        save_dict_to_json()
+        return "Группа успешно удалена"

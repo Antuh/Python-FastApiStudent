@@ -1,8 +1,15 @@
-from fa_learn_app.repositories.student import ProductTmpRepository
+from fa_learn_app.repositories.student import StudentJsonRepository
+from fa_learn_group_app.repositories.group import GroupJsonRepository
 
-TMP_REPOSITORY = ProductTmpRepository()
 
-def get_product_repo() -> ProductTmpRepository:
-    # Получение Product репозитория
+TMP_STUDENT_REPOSITORY = StudentJsonRepository()
 
-    return TMP_REPOSITORY
+
+
+def get_student_repo() -> StudentJsonRepository:
+    # Получение Student репозитория
+
+    return TMP_STUDENT_REPOSITORY
+
+
+

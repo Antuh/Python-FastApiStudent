@@ -1,32 +1,31 @@
 import datetime
 import uuid
-from fa_learn_group_app.models.group import GroupIn, GroupOut, GroupStorage
+from fa_learn_group_app.models.group import GroupIn, GroupStorage
 
 
-def convert_product_storage_to_out(product: GroupStorage) -> GroupOut:
-    # Производит конвертацию ProductSrorage --> ProductOut
+def convert_group_in_to_storage(group: GroupIn) -> GroupStorage:
+    # Производит конвертацию GroupIn --> GroupStorage
 
-    tmp_dict: dict = product.dict()
-    tmp_dict.pop("secret_token", None)
-    return GroupOut(**tmp_dict)
-
-
-def convert_product_in_to_storage(product: GroupIn) -> GroupStorage:
-    # Производит конвертацию ProductIn --> PrductStorage
-
-    tmp_dict: dict = product.dict()
-    product_storage = GroupStorage(id=uuid.uuid4(),
-                                     created_at=datetime.datetime.now(),
-                                     **tmp_dict)
-    return product_storage
+    tmp_dict: dict = group.dict()
+    group_storage = GroupStorage(id=str(uuid.uuid4()),
+                                 created_at=str(datetime.datetime.now()),
+                                 **tmp_dict)
+    return group_storage
 
 
-def update_product_in_to_storage(id_old :uuid.UUID, product_new: GroupIn) -> GroupStorage:
-    # Производит обновление данных
+def update_group_in_storage(id_old: uuid.UUID, group_new: GroupIn) -> GroupStorage:
+    # Производит обновление данных группы
 
-    tmp_dict: dict = product_new.dict()
-    product_storage = GroupStorage(id=id_old,
-                                     created_at=datetime.datetime.now(),
-                                     **tmp_dict)
+    tmp_dict: dict = group_new.dict()
+    group_storage = GroupStorage(id=str(id_old),
+                                 created_at=str(datetime.datetime.now()),
+                                 **tmp_dict)
 
-    return product_storage 
+    return group_storage
+
+
+def convert_group_dict_to_storage(group_dict: dict) -> GroupStorage:
+    # Производит преобразование dict к типу GroupStorage
+
+    group_storage = GroupStorage(**group_dict)
+    return group_storage
